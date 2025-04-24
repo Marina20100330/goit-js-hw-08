@@ -64,7 +64,6 @@ const images = [
   },
 ];
 
-
 const galleryList = document.querySelector('.gallery');
 
 function createGalleryItemMarkup({ preview, original, description }) {
@@ -81,6 +80,7 @@ function createGalleryItemMarkup({ preview, original, description }) {
     </li>
   `;
 }
+
 const galleryMarkup = images.map(createGalleryItemMarkup).join('');
 
 galleryList.innerHTML = galleryMarkup;
@@ -95,21 +95,23 @@ function onGalleryClick(event) {
     }
 
     event.preventDefault();
-
     const largeImageUrl = event.target.dataset.source;
-
+    const imageAlt = event.target.alt; 
     const instance = basicLightbox.create(`
-        <img src="${largeImageUrl}" alt="${event.target.alt}">
-    `);
+        <img src="${largeImageUrl}" alt="${imageAlt}">
+    `, {
+        onShow: (instance) => {
+            window.addEventListener('keydown', onEscKeyPress);
+        },
+        onClose: (instance) => {
+            window.removeEventListener('keydown', onEscKeyPress);
+        }
+    });
 
     instance.show();
-
-    window.addEventListener('keydown', onEscKeyPress);
-
     function onEscKeyPress(event) {
         if (event.code === 'Escape') {
             instance.close();
-            window.removeEventListener('keydown', onEscKeyPress);
         }
     }
 }
