@@ -65,8 +65,8 @@ const images = [
 ];
 
 
-
 const galleryList = document.querySelector('.gallery');
+
 function createGalleryItemMarkup({ preview, original, description }) {
     return `
     <li class="gallery-item">
@@ -84,3 +84,33 @@ function createGalleryItemMarkup({ preview, original, description }) {
 const galleryMarkup = images.map(createGalleryItemMarkup).join('');
 
 galleryList.innerHTML = galleryMarkup;
+
+galleryList.addEventListener('click', onGalleryClick);
+
+function onGalleryClick(event) {
+    const isGalleryImage = event.target.classList.contains('gallery-image');
+
+    if (!isGalleryImage) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const largeImageUrl = event.target.dataset.source;
+
+    const instance = basicLightbox.create(`
+        <img src="${largeImageUrl}" alt="${event.target.alt}">
+    `);
+
+    instance.show();
+
+    window.addEventListener('keydown', onEscKeyPress);
+
+    function onEscKeyPress(event) {
+        if (event.code === 'Escape') {
+            instance.close();
+            window.removeEventListener('keydown', onEscKeyPress);
+        }
+    }
+}
+
